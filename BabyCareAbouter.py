@@ -1,7 +1,7 @@
 import requests
 import json
 import itchat
-
+import time
 
 class BabyCareAbouter:
     '''
@@ -49,7 +49,7 @@ class BabyCareAbouter:
         info = babyWords.encode('utf8')
         api_url = 'http://www.tuling123.com/openapi/api'   # 图灵机器人网址
         data = {
-            'key': 'b8b30d45beb94009ab53aa2718b03792',     
+            'key': 'cefc853e3aa4404faf56b649fcff4763',     
             'info': info,                                  # 这是我们从好友接收到的消息 然后转发给图灵机器人
             'userid': 'wechat-robot',                      # 这里你想改什么都可以
         }
@@ -57,7 +57,7 @@ class BabyCareAbouter:
         return r.get('text')
 
 
-    def reply_to_baby(self,babyWords):
+    def reply(self,babyWords):
         '''
         回复该被关心的人的消息
         '''	
@@ -91,4 +91,6 @@ class BabyCareAbouter:
                     '2.发送“亲爱哒，想你啦”，那我会对你说情话，每天都不一样哦！\n'
                     '3.发送“亲爱哒，我有点无聊”，性感小昭，在线陪聊！\n'
                     '4.发送“好啦，不玩啦”，隐藏功能页面就关闭啦！\n')
+		#延时1s后发送
+        time.sleep(1)
         itchat.send_msg(reply_words,toUserName=self.name_uuid)
