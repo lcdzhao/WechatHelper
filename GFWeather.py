@@ -416,12 +416,12 @@ class GFWeather:
                 delta_msg = ''
             random_choice = random.randint(1, 10)
             if random_choice == 5:
-                #不加格言但是有土味情话的版本
+                #不加备注但是有土味情话的版本
                 today_msg = f'{delta_msg}\n{notice}。\n{temperature}\n{wind}{aqi}\n\n{dictum_msg}'
             else:
-                #不加格言和土味情话的版本
+                #不加备注和土味情话的版本
                 today_msg = f'{delta_msg}\n{notice}。\n{temperature}\n{wind}{aqi}'
-            #加格言版本
+            #加备注版本
             #today_msg = f'{delta_msg}\n{notice}。\n{temperature}\n{wind}{aqi}\n\n{dictum_msg}\n{sweet_words if sweet_words else ""}'
             return today_msg
 	
