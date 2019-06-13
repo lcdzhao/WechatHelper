@@ -29,16 +29,16 @@ class GFWeather:
             config = yaml.load(f, Loader=yaml.Loader)
 
         alarm_timed = config.get('alarm_timed').strip()
-        init_msg = f"每天定时发送时间：{alarm_timed}\n"
+        init_msg = f"每天定时发送时间:{alarm_timed}\n"
 
         dictum_channel = config.get('dictum_channel', -1)
-        init_msg += f"格言获取渠道：{self.dictum_channel_name.get(dictum_channel, '无')}\n"
+        init_msg += f"格言获取渠道:{self.dictum_channel_name.get(dictum_channel, '无')}\n"
 
         girlfriend_list = []
         girlfriend_infos = config.get('girlfriend_infos')
         for girlfriend in girlfriend_infos:
             girlfriend.get('wechat_name').strip()
-            # 根据城市名称获取城市编号，用于查询天气。查看支持的城市为：http://cdn.sojson.com/_city.json
+            # 根据城市名称获取城市编号，用于查询天气。查看支持的城市为:http://cdn.sojson.com/_city.json
             city_name = girlfriend.get('city_name').strip()
             city_code = city_dict.city_dict.get(city_name)
             if not city_code:
@@ -47,8 +47,8 @@ class GFWeather:
             girlfriend['city_code'] = city_code
             girlfriend_list.append(girlfriend)
 
-            print_msg = f"女朋友的微信昵称：{girlfriend.get('wechat_name')}\n\t女友所在城市名称：{girlfriend.get('city_name')}\n\t" \
-                f"在一起的第一天日期：{girlfriend.get('start_date')}\n\t最后一句为：{girlfriend.get('sweet_words')}\n"
+            print_msg = f"女朋友的微信昵称:{girlfriend.get('wechat_name')}\n\t女友所在城市名称:{girlfriend.get('city_name')}\n\t" \
+                f"在一起的第一天日期:{girlfriend.get('start_date')}\n\t最后一句为:{girlfriend.get('sweet_words')}\n"
             init_msg += print_msg
 
         print(u"*" * 50)
@@ -225,53 +225,140 @@ class GFWeather:
         tem_words = f'今天的温度大概是{high_c}℃/{low_c}℃。'
         low_c = float(low_c)
         high_c = float(high_c)
+        random_choice = random.randint(1, 3)
         if low_c>=10:
             if high_c >= 38:
-                tem_words = tem_words + '卧槽，卧槽！爆表了。都超过38℃了，今天还是呆在宿舍好好吹空调吧。运动的话，不要太晚了哦。'
+                if random_choice == 1:
+                    tem_words = tem_words + '卧槽，卧槽！爆表了。都超过38℃了，今天还是呆在宿舍好好吹空调吧。运动的话，不要太晚了哦。'
+                elif random_choice == 2:
+                    tem_words = tem_words + '天呐！天呐！怎么肥四！这天气是肿么了？？？好好呆在宿舍吧。太阳下山后再去运动！'
+                else:
+                    tem_words = tem_words + '！！！？？？这天气，我只想把自己塞在冰箱里一动不动，祝你安好，我的多多同学。不要被热傻了然后忘记运动了！'
             elif high_c >= 35:
-                tem_words = tem_words + '好热好热啊！出去的时候记得带伞哦，不然晒黑了的话，哼，我要退货的！还有别忘了今天的运动哦，不要太晚啦！'	
+                if random_choice == 1:
+                    tem_words = tem_words + '好热好热啊！出去的时候记得带伞哦，不然晒黑了的话，哼，我要退货的！还有别忘了今天的运动哦，不要太晚啦！'
+                elif random_choice == 2:
+                    tem_words = tem_words + '真的，超过35℃，我想多多同学的世界就只有宿舍这么大了，还是不要出去了。太阳下山后再去运动叭！'
+                else:
+                    tem_words = tem_words + '如果有什么出游计划的话，我建议取消，真的会热傻的！想出去的话建议晚上出去跑步呼吸一下新鲜空气就可以啦！'	
             elif high_c >= 30:
-            	tem_words = tem_words + '不算很热，但也有点热啦。不太适合出去玩儿，不下雨的话，晚上倒是挺适合出去散步。也要记得今天的运动鸭！'
+                if random_choice == 1:
+                    tem_words = tem_words + '不算很热，但也有点热啦。不太适合出去玩儿，不下雨的话，晚上倒是挺适合出去散步。也要记得今天的运动鸭！'
+                elif random_choice == 2:
+                    tem_words = tem_words + '我觉得这个温度还可以，勉强可以接受，但是也好热啊，但是一般这种天气，晚点天空超好看！可以欣赏，还有看完记得运动鸭！'
+                else:
+                    tem_words = tem_words + '可以出门，不会被热胡！但是也有点热了，太阳下山后还是可以安全出去的！晚上适合运动呦~'
             elif high_c >= 26:
-                tem_words = tem_words + '咦，气温蛮舒服的嘛！热那么一丢丢，如果没有下雨的话，很适合出去玩哦！但是别光顾着玩哦，也要记得运动鸭！'
+                if random_choice == 1:
+                    tem_words = tem_words + '咦，气温蛮舒服的嘛！热那么一丢丢，如果没有下雨的话，很适合出去玩哦！但是别光顾着玩哦，也要记得运动鸭！'
+                elif random_choice == 2:
+                    tem_words = tem_words + '这样的天气适合在太阳下山后欣赏夕阳，如果在我们学校的话，会看到超美的夕阳！不知道你那边怎么样？晚上可以告诉我鸭！还有运动别忘啦！'
+                else:
+                    tem_words = tem_words + 'emmmmmm,气温还行，感觉早晨和太阳下山后会很舒服！这两个时间点适合出游和运动呦~'
             elif high_c >= 20:
-                tem_words = tem_words + '哈哈哈哈哈，气温真滴是很舒服了！要是没有下雨的话，适合出去蹦蹦跳跳哦。今天的运动可以放在下午哦，据说下午5-6点最适合运动了'
+                if random_choice == 1:
+                    tem_words = tem_words + '哈哈哈哈哈，气温真滴是很舒服了！要是没有下雨的话，适合出去蹦蹦跳跳哦。今天的运动可以放在下午哦，据说下午5-6点最适合运动了'
+                elif random_choice == 2:
+                    tem_words = tem_words + '这么爽的天气！我直接点吧，今天适合跑十公里！'
+                else:
+                    tem_words = tem_words + '这么好的气温，如果没有雨，是不是要计划一下去哪玩呢？但也别忘记运动呦~'
             elif high_c >= 15:
-                tem_words = tem_words + '可能稍微有一丢丢的冷，记得要穿上长袖啦！也别忘了今天的运动哦，这种天气最适合运动啦。'
+                if random_choice == 1:
+                    tem_words = tem_words + '可能稍微有一丢丢的冷，要穿上长袖啦！也别忘了今天的运动哦，这种天气最适合运动啦。'
+                elif random_choice == 2:
+                    tem_words = tem_words + '最喜欢这种时候了，气温刚刚好，穿一件长袖就可以好好感受这个季节了！这种天气运动也很舒服！'
+                else:
+                    tem_words = tem_words + '出门要记得穿上长袖还有长裤子！如果没下雨，适合下午运动啦！'
             else:
-            	tem_words = tem_words + '有一丢丢的冷，记得衣服要穿厚一点哦！到了运动的时间可不要偷懒鸭！'
+                if random_choice == 1:
+                    tem_words = tem_words + '有一丢丢的冷，记得衣服要穿厚一点哦！到了运动的时间可不要偷懒鸭！'
+                elif random_choice == 2:
+                    tem_words = tem_words + '哇，真滴，写这个程序很累的，比如这里，我很累了，但是我还坚持写，我要亲亲我不管！'
+                else:
+                    tem_words = tem_words + '这种温度，最适合盖好被子，躺在床上了！享受一会儿就起来啦，不要赖床哦，小懒猪！'
         else:
             if low_c < -10:
-                tem_words = tem_words + '天呐，怎么会这么冷的一天！记得要穿的厚厚的，看起来胖一点没关系啦，暖暖的最重要！如果下雪的话，今天就不要跑步啦！'
+                if random_choice == 1:
+                    tem_words = tem_words + '天呐，怎么会这么冷的一天！记得要穿的厚厚的，看起来胖一点没关系啦，暖暖的最重要！如果下雪的话，今天就不要跑步啦！'
+                elif random_choice == 2:
+                    tem_words = tem_words + '太冷啦，太冷啦！一定要穿的厚厚哦，不要把自己冻着啦！下雪的话，要注意小心脚下鸭！运动的话，不要出太多汉，不然好难受的。'
+                else:
+                    tem_words = tem_words + '这种温度，最适合盖紧被子，躺在床上了！享受一会儿就起来啦，不要赖床哦，小懒猪！'
             if low_c < -5 :
-            	tem_words = tem_words + '好冷好冷啊！记得套上暖暖的毛衣~。还要记得今天的运动呦！'
+                if random_choice == 1:
+                    tem_words = tem_words + '好冷好冷啊！记得套上暖暖的毛衣~。还要记得今天的运动呦！'
+                elif random_choice == 2:
+                    tem_words = tem_words + '好冷呀，想到我会不会让你温暖一点点勒~嘿嘿嘿，起床啦，这种天气，我知道你肯定要赖床了。'
+                else:
+                    tem_words = tem_words + '这种温度，最适合盖紧被子，躺在床上了！享受一会儿就起来啦，不要赖床哦，小懒猪！'
             if low_c < 0 :
-            	tem_words = tem_words + '好冷鸭!你不会现在还没有穿秋裤吧！没穿的话要打你PP！还有别忘了今天的运动鸭！'
+                if random_choice == 1:
+                    tem_words = tem_words + '好冷鸭!你不会现在还没有穿秋裤吧！没穿的话要打你PP！还有别忘了今天的运动鸭！'
+                elif random_choice == 2:
+                    tem_words = tem_words + '最低温度低于0度了，要注意照顾好自己，穿的暖和一点哦！'
+                else:
+                    tem_words = tem_words + '蛮冷的啊！穿的厚厚的哦！多喝热水暖暖身子，给你买的保温杯要一直接满水哦~'
             if low_c < 5 :
-                tem_words = tem_words + '秋裤要拿出来放在身边，随时记得穿，这种天气就差不多要穿了,刚刚好暖暖的，不过运动的时候，秋裤还是要脱掉'
+                if random_choice == 1:
+                    tem_words = tem_words + '秋裤要拿出来放在身边，这种天气就差不多要穿了,刚刚好暖暖的，不过运动的时候，秋裤还是要脱掉'
+                elif random_choice == 2:
+                    tem_words = tem_words + '容易感冒的季节，要保护好自己哦！要穿的暖暖哒！'
+                else:
+                    tem_words = tem_words + '有点微冷，建议多想想我，会暖和很多，嘿嘿嘿~'
             else:
-                tem_words = tem_words + '有一丢丢冷哦，穿好外套，要照顾好自己，别让自己感冒啦！也别忘了今天的运动鸭！'
+                if random_choice == 1:
+                    tem_words = tem_words + '有一丢丢冷哦，穿好外套，要照顾好自己，别让自己感冒啦！也别忘了今天的运动鸭！'
+                elif random_choice == 2:
+                    tem_words = tem_words + '这几天感冒的人应该特别多，记得多喝热水！还有按时运动，运动多了，真的感冒就离得远远的！'
+                else:
+                    tem_words = tem_words + '有点微冷，建议多想想我，会暖和很多，嘿嘿嘿~'
         return tem_words 	
 
     def get_aqi_words(self,aqi):
         aqi_words = f'还有空气指数大概是{aqi},'
         aqi = float(aqi)
+        random_choice = random.randint(1, 3)
         if aqi >= 200:
-            aqi_words = aqi_words + '天呐，这污染强度，建议不要呼吸！一定记得要戴口罩！'
+            if random_choice == 1:
+                aqi_words = aqi_words + '天呐，这污染强度，建议不要呼吸！一定记得要戴口罩！'
+            elif random_choice == 2:
+                aqi_words = aqi_words + '卧槽，空气有毒，慎吸！！！！！！'
+            else:
+                aqi_words = aqi_words + '戴好口罩，做好防毒措施！'
         elif aqi >= 150:
-            aqi_words = aqi_words + '欧呦，空气不太好，一点都不适合跑步哦,有口罩的话，尽量带着口罩啦！'	
+            if random_choice == 1:
+                aqi_words = aqi_words + '欧呦，空气不太好，一点都不适合跑步哦,有口罩的话，尽量带着口罩啦！'	
+            elif random_choice == 2:
+                aqi_words = aqi_words + '不适合室外运动！！！谨记！'
+            else:
+                aqi_words = aqi_words + '记得带上口罩鸭！'
         elif aqi >= 100:
-            aqi_words = aqi_words + '轻度污染的一天，不要在外面运动啦！'	
+            if random_choice == 1:
+                aqi_words = aqi_words + '轻度污染的一天，不要在外面运动啦！'
+            elif random_choice == 2:
+                aqi_words = aqi_words + '不太适合在室外运动哟~'
+            else:
+                aqi_words = aqi_words + '能少吸几口就少吸几口吧！'	
         elif aqi >= 50:
-            aqi_words = aqi_words + '空气还行，可以正常呼吸哦！'
+            if random_choice == 1:
+                aqi_words = aqi_words + '空气还行，可以正常呼吸哦！'
+            elif random_choice == 2:
+                aqi_words = aqi_words + '比较适合在室外运动哦~'
+            else:
+                aqi_words = aqi_words + 'emmmmm，是可以正常呼吸的一天'
         else: 
-            aqi_words = aqi_words + '哈哈哈哈哈，这么好的空气，建议出去的时候多吸几口！'	
+            if random_choice == 1:
+                aqi_words = aqi_words + '哈哈哈哈哈，这么好的空气，建议出去的时候多吸几口！'
+            elif random_choice == 2:
+                aqi_words = aqi_words + '今天超级适合在室外运动哟~'
+            else:
+                aqi_words = aqi_words + '今天的空气多吸几口会不会醉了?'	
         return aqi_words
 
     def get_weather_info(self, dictum_msg='', city_code='101030100', start_date='2018-01-01',
                          sweet_words='From your Valentine'):
         '''
-        获取天气信息。网址：https://www.sojson.com/blog/305.html
+        获取天气信息。网址:https://www.sojson.com/blog/305.html
         :param dictum_msg: str,发送给朋友的信息
         :param city_code: str,城市对应编码
         :param start_date: str,恋爱第一天日期
@@ -297,9 +384,21 @@ class GFWeather:
             temperature = self.get_tem_words(low_c,high_c)
 
             # 风
+            random_choice = random.randint(1, 6)
             fx = today_weather.get('fx')
             fl = today_weather.get('fl')
-            wind = f'昨晚夜观天象，天象显示今天的风会是{fx}，强度大概{fl}。'
+            if random_choice == 1:
+                wind = f'昨晚夜观天象，天象显示今天的风会是{fx}，强度大概{fl}。'
+            elif random_choice == 2:
+                wind = f'强度{fl}的{fx}今天将向你吹来。'
+            elif random_choice == 3:
+                wind = f'今天吹的是{fx}，强度{fl}。'
+            elif random_choice == 4:
+                wind = f'吹呀吹，今天吹的是{fx}呦~，强度{fl}。'
+            elif random_choice == 5:
+                wind = f'{fl}的{fx}在天空盘旋。'
+            else:
+                wind = f'今天天空挂的是强度{fl}的{fx}。'
 
             # 空气指数
             aqi = today_weather.get('aqi')
@@ -315,14 +414,37 @@ class GFWeather:
                     delta_msg = ''
             else:
                 delta_msg = ''
+            random_choice = random.randint(1, 10)
+            if random_choice == 5:
+                #不加格言但是有土味情话的版本
+                today_msg = f'{delta_msg}\n{notice}。\n{temperature}\n{wind}{aqi}\n\n{dictum_msg}'
+            else:
+                #不加格言和土味情话的版本
+                today_msg = f'{delta_msg}\n{notice}。\n{temperature}\n{wind}{aqi}'
             #加格言版本
             #today_msg = f'{delta_msg}\n{notice}。\n{temperature}\n{wind}{aqi}\n\n{dictum_msg}\n{sweet_words if sweet_words else ""}'
-            #不加格言的版本
-            today_msg = f'{delta_msg}\n{notice}。\n{temperature}\n{wind}{aqi}'
             return today_msg
 	
     
 	
 	
 
+if __name__ == '__main__':
+    # 直接运行
+    # GFWeather().run()
 
+    # 只查看获取数据，
+    # GFWeather().start_today_info(True)
+
+    # 测试获取词霸信息
+    # ciba = GFWeather().get_ciba_info()
+    # print(ciba)
+
+    # 测试获取每日一句信息
+    # dictum = GFWeather().get_dictum_info()
+    # print(dictum)
+
+    # 测试获取天气信息
+    # wi = GFWeather().get_weather_info('sorry \n')
+    # print(wi)
+    pass
