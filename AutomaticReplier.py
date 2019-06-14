@@ -35,7 +35,7 @@ class AutomaticReplier:
         '''
         回复该人的消息
         '''	
-        reply_words = get_zhao_words(words)
+        reply_words = self.get_zhao_words(words)
 		#延时1s后发送
         time.sleep(1)
         itchat.send_msg(reply_words,toUserName=self.name_uuid)

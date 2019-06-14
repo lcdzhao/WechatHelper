@@ -4,3 +4,6 @@ itchat
 apscheduler
 pyyaml
 lxml
+baidu-aip
+pydub
+ffmpeg

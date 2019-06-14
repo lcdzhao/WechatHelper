@@ -1,14 +1,16 @@
 """
 程序运行入口
 """
-from GFWeather import GFWeather
+from ChatManager import ChatManager
 
 def run():
     """
     主程序入口
     :return: None
     """
-    GFWeather().run()
+    #GFWeather().run()
+    chatManager = ChatManager()
+    chatManager.run()
 
 def test_run():
     """

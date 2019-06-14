@@ -140,6 +140,7 @@ itchat.send(today_msg, toUserName=name_uuid)
 ### 安装依赖
 
 使用 pip install -r requirements.txt 安装所有依赖
+pydub需要安装ffmpeg(依赖文件夹里有，下载windows版解压后把bin目录添加到系统变量的path中)
 
 ### 参数配置
 config.yaml

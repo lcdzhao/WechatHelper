@@ -16,7 +16,8 @@ class GFWeather:
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36",
     }
     dictum_channel_name = {1: 'ONE●一个', 2: '词霸(每日英语)', 3: '土味情话'}
-
+    qinghua = '爱你一生一世'
+	
     def __init__(self):
         self.girlfriend_list, self.alarm_hour, self.alarm_minute, self.dictum_channel = self.get_init_data()
 
@@ -204,6 +205,7 @@ class GFWeather:
         return ''
 
     def get_lovelive_info(self):
+        return GFWeather.qinghua
         '''
         从土味情话中获取每日一句。
         :return: str,土味情话
