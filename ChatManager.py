@@ -110,13 +110,15 @@ class ChatManager:
         '''
         获取命令都有哪些
         '''	
-        return ('命令错误，请按照下面提示来输入命令:\n'
+        return ('*' * 20
+            '命令错误，请按照下面提示来输入命令:\n'
             '    增加自动回复+空格+要加的人 \n'
             '    增加关心女友+空格+要加的人\n' 
             '    删除自动回复+空格+要删除的人\n'
             '    删除关心女友+空格+要删除的人\n' 
             '    查看自动回复\n'
-            '    查看关心女友\n')
+            '    查看关心女友\n'
+            '*' * 20)
 			
     @staticmethod     
     def executiveOrder(orderWords):
@@ -125,23 +127,23 @@ class ChatManager:
         '''
         order = orderWords.split(' ',1)
         if order[0] == '增加自动回复':
-            return ChatManager.addAutomaticReplier(order[1])
+            return '*' * 20 + '\n'  + ChatManager.addAutomaticReplier(order[1]) + '*' * 20 
         elif order[0] == '增加关心女友':
-            return ChatManager.addBabyCareAbouter(order[1])
+            return '*' * 20 + '\n' + ChatManager.addBabyCareAbouter(order[1]) + '*' * 20 
         elif order[0] == '删除自动回复':
-            return ChatManager.delAutomaticReplier(order[1])
+            return '*' * 20 + '\n' + ChatManager.delAutomaticReplier(order[1]) + '*' * 20 
         elif order[0] == '删除关心女友':
-            return ChatManager.delBabyCareAbouter(order[1])
+            return '*' * 20 + '\n' + ChatManager.delBabyCareAbouter(order[1]) + '*' * 20 
         elif order[0] == '查看自动回复':
             if not ChatManager.automaticRepliers:
-                return '列表为空'
-            return ChatManager.automaticRepliers.keys()
+                return '*' * 20 + '\n' + '列表为空' + '*' * 20 
+            return '*' * 20 + '\n' + ChatManager.automaticRepliers.keys() + '*' * 20 
         elif order[0] == '查看关心女友':	
             if not ChatManager.babyCareAbouters:
-                return '列表为空'
-            return ChatManager.babyCareAbouters.keys()       
+                return '*' * 20 + '\n' + '列表为空' + '*' * 20 
+            return '*' * 20 + '\n' + ChatManager.babyCareAbouters.keys() + '*' * 20       
         else:
-            return ChatManager.getOrders()
+            return '*' * 20 + '\n' + ChatManager.getOrders() + '*' * 20 
 		
     @staticmethod 
     def asr(msg):
