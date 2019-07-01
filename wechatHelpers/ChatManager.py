@@ -12,9 +12,7 @@ from aip import AipSpeech
 from pydub import AudioSegment
 import wave
 import io
-from GFWeather import GFWeather
-from AutomaticReplier import AutomaticReplier
-from BabyCareAbouter import BabyCareAbouter
+from apscheduler.schedulers.blocking import BlockingScheduler
 
 
 
@@ -25,6 +23,7 @@ class ChatManager:
 	
     def __init__(self):
         self.GFWeather = None
+        scheduler = BlockingScheduler()
         scheduler.add_job(self.keepAlive, 'interval', seconds=60*30)
         scheduler.start()
 

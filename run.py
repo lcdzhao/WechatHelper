@@ -1,7 +1,7 @@
 """
 程序运行入口
 """
-from wechatHelpers import ChatManager
+from wechatHelpers.ChatManager import ChatManager
 
 def run():
     """
