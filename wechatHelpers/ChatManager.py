@@ -12,9 +12,9 @@ from aip import AipSpeech
 from pydub import AudioSegment
 import wave
 import io
-from AutomaticReplier import AutomaticReplier 
-from BabyCareAbouter import BabyCareAbouter 
 from GFWeather import GFWeather
+from AutomaticReplier import AutomaticReplier
+from BabyCareAbouter import BabyCareAbouter
 
 
 
@@ -22,6 +22,7 @@ from GFWeather import GFWeather
 class ChatManager:   
     babyCareAbouters = {}
     automaticRepliers = {}
+	
     def __init__(self):
         self.GFWeather = None
         scheduler.add_job(self.keepAlive, 'interval', seconds=60*30)
@@ -153,14 +154,14 @@ class ChatManager:
             if not ChatManager.automaticRepliers:
                 return '列表为空'
             allAutomaticRepliers = '自动回复人员有:'
-            for automaticReplier = ChatManager.automaticRepliers.values():
+            for automaticReplier in ChatManager.automaticRepliers.values():
                 allAutomaticRepliers += '\n       ' + automaticReplier.wechat_name
             return allAutomaticRepliers
         elif order[0] == '查看关心女友':	
             if not ChatManager.babyCareAbouters:
                 return '列表为空'
             allBabyCareAbouters = '关心人员有:'
-            for babyCareAbouter = ChatManager.babyCareAbouters.values():
+            for babyCareAbouter in ChatManager.babyCareAbouters.values():
                 allBabyCareAbouters+= '\n       ' + babyCareAbouter.wechat_name
             return allBabyCareAbouters
         else:
