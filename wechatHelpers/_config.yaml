@@ -5,11 +5,6 @@
 # 定时时间
 alarm_timed: '10:34'
 
-# 格言渠道
-# 1 : ONE●一个
-# 2 : 词霸（每日英语，双语）
-# 3 : 土味情话
-dictum_channel: 1
 
 girlfriend_infos:
   -

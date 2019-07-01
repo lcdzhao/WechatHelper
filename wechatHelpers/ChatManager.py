@@ -14,6 +14,8 @@ import wave
 import io
 from AutomaticReplier import AutomaticReplier 
 from BabyCareAbouter import BabyCareAbouter 
+from GFWeather import GFWeather
+
 
 
 
@@ -22,8 +24,15 @@ class ChatManager:
     automaticRepliers = {}
     def __init__(self):
         self.GFWeather = None
-	
-	
+        scheduler.add_job(self.keepAlive, 'interval', seconds=60*30)
+        scheduler.start()
+
+    def keepAlive(self):
+        # 不准时发送，防止被微信查封
+        sleepSeconds = random.randint(1, 10)
+        time.sleep(sleepSeconds)
+        set_system_notice('keepAlive')
+		
     @staticmethod 
     def addBabyCareAbouter(wechat_name):
         friends = itchat.search_friends(name=wechat_name)
@@ -89,15 +98,17 @@ class ChatManager:
         # 仅仅判断是否在线
         if not auto_login:
             return online()
-
-        # 登陆，尝试 5 次
-        for _ in range(5):
+        exitCallback = exit_msg
+        # 登陆，尝试 2 次
+        for _ in range(2):
             # 命令行显示登录二维码
             # itchat.auto_login(enableCmdQR=True)
             if os.environ.get('MODE') == 'server':
-                itchat.auto_login(enableCmdQR=2,hotReload=True)
+                itchat.auto_login(enableCmdQR=2, exitCallback=exitCallback)
+                itchat.run(blockThread=True)
             else:
-                itchat.auto_login(enableCmdQR=True,hotReload=True)
+                itchat.auto_login(exitCallback=exitCallback)
+                itchat.run(blockThread=True)
             if online():
                 print('登录成功')
                 return True
@@ -110,7 +121,7 @@ class ChatManager:
         '''
         获取命令都有哪些
         '''	
-        return ('*' * 20
+        return (
             '命令错误，请按照下面提示来输入命令:\n'
             '    增加自动回复+空格+要加的人 \n'
             '    增加关心女友+空格+要加的人\n' 
@@ -118,7 +129,8 @@ class ChatManager:
             '    删除关心女友+空格+要删除的人\n' 
             '    查看自动回复\n'
             '    查看关心女友\n'
-            '*' * 20)
+            '    设置忙什么+空格+你正在做什么'
+            )
 			
     @staticmethod     
     def executiveOrder(orderWords):
@@ -127,26 +139,37 @@ class ChatManager:
         '''
         order = orderWords.split(' ',1)
         if order[0] == '增加自动回复':
-            return '*' * 20 + '\n'  + ChatManager.addAutomaticReplier(order[1]) + '*' * 20 
+            return ChatManager.addAutomaticReplier(order[1])
         elif order[0] == '增加关心女友':
-            return '*' * 20 + '\n' + ChatManager.addBabyCareAbouter(order[1]) + '*' * 20 
+            return ChatManager.addBabyCareAbouter(order[1])
         elif order[0] == '删除自动回复':
-            return '*' * 20 + '\n' + ChatManager.delAutomaticReplier(order[1]) + '*' * 20 
+            return ChatManager.delAutomaticReplier(order[1])
         elif order[0] == '删除关心女友':
-            return '*' * 20 + '\n' + ChatManager.delBabyCareAbouter(order[1]) + '*' * 20 
+            return ChatManager.delBabyCareAbouter(order[1])
+        elif order[0] == '设置忙什么':
+            BabyCareAbouter.what_i_am_doing = order[1]
+            return "回复    "+order[1]+"   设置成功"
         elif order[0] == '查看自动回复':
             if not ChatManager.automaticRepliers:
-                return '*' * 20 + '\n' + '列表为空' + '*' * 20 
-            return '*' * 20 + '\n' + ChatManager.automaticRepliers.keys() + '*' * 20 
+                return '列表为空'
+            allAutomaticRepliers = '自动回复人员有:'
+            for automaticReplier = ChatManager.automaticRepliers.values():
+                allAutomaticRepliers += '\n       ' + automaticReplier.wechat_name
+            return allAutomaticRepliers
         elif order[0] == '查看关心女友':	
             if not ChatManager.babyCareAbouters:
-                return '*' * 20 + '\n' + '列表为空' + '*' * 20 
-            return '*' * 20 + '\n' + ChatManager.babyCareAbouters.keys() + '*' * 20       
+                return '列表为空'
+            allBabyCareAbouters = '关心人员有:'
+            for babyCareAbouter = ChatManager.babyCareAbouters.values():
+                allBabyCareAbouters+= '\n       ' + babyCareAbouter.wechat_name
+            return allBabyCareAbouters
         else:
-            return '*' * 20 + '\n' + ChatManager.getOrders() + '*' * 20 
+            return ChatManager.getOrders()
 		
+
     @staticmethod 
     def asr(msg):
+        #将语音消息存入文件，想通过百度翻译，再通过获得图灵机器人的回复
         APP_ID = '16516161'
         API_KEY = 'eycPzd5xfCMsd0jn4aWrjwDz'
         SECRET_KEY = 'PLWIGyEIYcsYQoHuw6lPzxmBrrmSgsoc'
@@ -176,6 +199,19 @@ class ChatManager:
         os.remove(msg['FileName'])
         return result['result'][0]
     
+    def set_system_notice(text):
+        """
+        给文件传输助手发送系统日志。
+        :param text:日志内容
+        :return:None
+        """
+        if text:
+            text = '*' * 30 + '\n\n' + text + '\n\n' + '*' * 30
+            itchat.send(text, toUserName=FILEHELPER)
+
+
+    def exit_msg():
+        set_system_notice('项目已断开连接')
   
 
 
@@ -190,7 +226,7 @@ class ChatManager:
         toUserName = msg['ToUserName']
         #如果是发给filehelper的微信消息，则处理该命令
         if toUserName == 'filehelper':
-            itchat.send_msg(ChatManager.executiveOrder(msg['Text']),toUserName='filehelper')
+            set_system_notice(msg['Text'])
             return
         automaticReplier = ChatManager.automaticRepliers.get(fromUserName)
         if automaticReplier:
@@ -228,7 +264,7 @@ class ChatManager:
         if not self.is_online(auto_login=True):
             return
         itchat.run()
-        #self.GFWeather = GFWeather()
-        #self.GFWeather.run()
+        self.GFWeather = GFWeather()
+        self.GFWeather.run()
 
 		

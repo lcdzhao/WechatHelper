@@ -12,11 +12,8 @@ import city_dict
 
 
 class GFWeather:
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36",
-    }
-    dictum_channel_name = {1: 'ONE●一个', 2: '词霸(每日英语)', 3: '土味情话'}
-    qinghua = '爱你一生一世'
+
+    qinghua = '为什么我把概率设置的很小很小，因为我想和你很久很久~'
 	
     def __init__(self):
         self.girlfriend_list, self.alarm_hour, self.alarm_minute, self.dictum_channel = self.get_init_data()
@@ -31,9 +28,6 @@ class GFWeather:
 
         alarm_timed = config.get('alarm_timed').strip()
         init_msg = f"每天定时发送时间:{alarm_timed}\n"
-
-        dictum_channel = config.get('dictum_channel', -1)
-        init_msg += f"格言获取渠道:{self.dictum_channel_name.get(dictum_channel, '无')}\n"
 
         girlfriend_list = []
         girlfriend_infos = config.get('girlfriend_infos')
@@ -54,58 +48,16 @@ class GFWeather:
 
         print(u"*" * 50)
         print(init_msg)
-
         hour, minute = [int(x) for x in alarm_timed.split(':')]
         return girlfriend_list, hour, minute, dictum_channel
 
-    def is_online(self, auto_login=False):
-        '''
-        判断是否还在线,
-        :param auto_login: bool,如果掉线了则自动登录(默认为 False)。
-        :return: bool,当返回为 True 时，在线；False 已断开连接。
-        '''
 
-        def online():
-            '''
-            通过获取好友信息，判断用户是否还在线
-            :return: bool,当返回为 True 时，在线；False 已断开连接。
-            '''
-            try:
-                if itchat.search_friends():
-                    return True
-            except:
-                return False
-            return True
-
-        if online():
-            return True
-        # 仅仅判断是否在线
-        if not auto_login:
-            return online()
-
-        # 登陆，尝试 5 次
-        for _ in range(5):
-            # 命令行显示登录二维码
-            # itchat.auto_login(enableCmdQR=True)
-            if os.environ.get('MODE') == 'server':
-                itchat.auto_login(enableCmdQR=2)
-            else:
-                itchat.auto_login(enableCmdQR=True)
-            if online():
-                print('登录成功')
-                return True
-        else:
-            print('登录成功')
-            return False
 
     def run(self):
         '''
         主运行入口
         :return:None
         '''
-        # 自动登录
-        if not self.is_online(auto_login=True):
-            return
         for girlfriend in self.girlfriend_list:
             wechat_name = girlfriend.get('wechat_name')
             friends = itchat.search_friends(name=wechat_name)
@@ -119,8 +71,6 @@ class GFWeather:
         scheduler = BlockingScheduler()
         # 每天定时给女朋友发送每日一句
         scheduler.add_job(self.start_today_info, 'cron', hour=self.alarm_hour, minute=self.alarm_minute)
-        # 每隔 2 分钟发送一条数据用于测试。
-        # scheduler.add_job(self.start_today_info, 'interval', seconds=120)
         scheduler.start()
 
     def start_today_info(self, is_test=False):
@@ -132,20 +82,12 @@ class GFWeather:
         print("*" * 50)
         print('获取相关信息...')
 
-        if self.dictum_channel == 1:
-            dictum_msg = self.get_dictum_info()
-        elif self.dictum_channel == 2:
-            dictum_msg = self.get_ciba_info()
-        elif self.dictum_channel == 3:
-            dictum_msg = self.get_lovelive_info()
-        else:
-            dictum_msg = ''
 
         for girlfriend in self.girlfriend_list:
             city_code = girlfriend.get('city_code')
             start_date = girlfriend.get('start_date').strip()
             sweet_words = girlfriend.get('sweet_words')
-            today_msg = self.get_weather_info(dictum_msg, city_code=city_code, start_date=start_date,
+            today_msg = self.get_weather_info(city_code=city_code, start_date=start_date,
                                               sweet_words=sweet_words)
             name_uuid = girlfriend.get('name_uuid')
             wechat_name = girlfriend.get('wechat_name')
@@ -171,52 +113,6 @@ class GFWeather:
         except:
             return False
 
-    def get_ciba_info(self):
-        '''
-        从词霸中获取每日一句，带英文。
-        :return:str ,返回每日一句（双语）
-        '''
-        print('获取格言信息（双语）...')
-        resp = requests.get('http://open.iciba.com/dsapi')
-        if resp.status_code == 200 and self.isJson(resp):
-            conentJson = resp.json()
-            content = conentJson.get('content')
-            note = conentJson.get('note')
-            # print(f"{content}\n{note}")
-            return f"{content}\n{note}\n"
-        else:
-            print("没有获取到数据")
-            return None
-
-    def get_dictum_info(self):
-        '''
-        获取格言信息（从『一个。one』获取信息 http://wufazhuce.com/）
-        :return: str， 一句格言或者短语
-        '''
-        print('获取格言信息...')
-        user_url = 'http://wufazhuce.com/'
-        resp = requests.get(user_url, headers=self.headers)
-        if resp.status_code == 200:
-            soup_texts = BeautifulSoup(resp.text, 'lxml')
-            # 『one -个』 中的每日一句
-            every_msg = soup_texts.find_all('div', class_='fp-one-cita')[0].find('a').text
-            return every_msg + "\n"
-        print('每日一句获取失败')
-        return ''
-
-    def get_lovelive_info(self):
-        return GFWeather.qinghua
-        '''
-        从土味情话中获取每日一句。
-        :return: str,土味情话
-        '''
-        print('获取土味情话...')
-        resp = requests.get("https://api.lovelive.tools/api/SweetNothings")
-        if resp.status_code == 200:
-            return resp.text + "\n"
-        else:
-            print('每日一句获取失败')
-            return None
 			
 			
 			
@@ -356,8 +252,14 @@ class GFWeather:
             else:
                 aqi_words = aqi_words + '今天的空气多吸几口会不会醉了?'	
         return aqi_words
-
-    def get_weather_info(self, dictum_msg='', city_code='101030100', start_date='2018-01-01',
+    
+	def get_wish(self):
+        random_wish = random.randint(1, 365)
+        if random_wish == 188:
+            return '哇！！！今天的你超级超级幸运~现在你可以对我许一个愿望，我会竭尽我的所有能力帮你完成愿望！！！'
+        return '今天的你没有获得许愿的权力哦！不要泄气，明天再看啦~'
+		
+    def get_weather_info(self,  city_code='101030100', start_date='2018-01-01',
                          sweet_words='From your Valentine'):
         '''
         获取天气信息。网址:https://www.sojson.com/blog/305.html
@@ -389,6 +291,10 @@ class GFWeather:
             random_choice = random.randint(1, 6)
             fx = today_weather.get('fx')
             fl = today_weather.get('fl')
+			
+            # 愿望
+            wish = get_wish();
+			
             if random_choice == 1:
                 wind = f'昨晚夜观天象，天象显示今天的风会是{fx}，强度大概{fl}。'
             elif random_choice == 2:
@@ -416,15 +322,15 @@ class GFWeather:
                     delta_msg = ''
             else:
                 delta_msg = ''
-            random_choice = random.randint(1, 10)
-            if random_choice == 5:
+            random_choice = random.randint(1, 30)
+            if random_choice == 10:
                 #不加备注但是有土味情话的版本
-                today_msg = f'{delta_msg}\n{notice}。\n{temperature}\n{wind}{aqi}\n\n{dictum_msg}'
+                today_msg = f'{delta_msg}\n{notice}。\n{temperature}\n{wind}{aqi}\n\n{qinghua} \n\n{wish}'
             else:
                 #不加备注和土味情话的版本
-                today_msg = f'{delta_msg}\n{notice}。\n{temperature}\n{wind}{aqi}'
+                today_msg = f'{delta_msg}\n{notice}。\n{temperature}\n{wind}{aqi}\n\n{wish} '
             #加备注版本
-            #today_msg = f'{delta_msg}\n{notice}。\n{temperature}\n{wind}{aqi}\n\n{dictum_msg}\n{sweet_words if sweet_words else ""}'
+            #today_msg = f'{delta_msg}\n{notice}。\n{temperature}\n{wind}{aqi}\n\n{qinghua}\n{sweet_words if sweet_words else ""}'
             return today_msg
 	
     
