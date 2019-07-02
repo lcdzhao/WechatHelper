@@ -13,11 +13,13 @@ from aip import AipSpeech
 from pydub import AudioSegment
 import wave
 import io
+import sys
+sys.path.append('./wechatHelpers')
 from apscheduler.schedulers.blocking import BlockingScheduler
 import _thread
-from wechatHelpers.AutomaticReplier import AutomaticReplier
-from wechatHelpers.BabyCareAbouter import BabyCareAbouter
-from wechatHelpers.GFWeather import GFWeather
+from AutomaticReplier import AutomaticReplier
+from BabyCareAbouter import BabyCareAbouter
+from GFWeather import GFWeather
 
 
 class ChatManager:   
