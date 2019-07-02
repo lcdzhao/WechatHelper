@@ -66,20 +66,21 @@ class BabyCareAbouter:
             elif babyWords == '不玩了':
                 self.is_using = False
                 reply_words = '好叽，下次来玩！'
+                itchat.send_msg(reply_words,toUserName=self.name_uuid)
             elif babyWords == '在干什么':
                 reply_words = BabyCareAbouter.what_i_am_doing
             elif babyWords == '七月份的尾巴你是狮子座':
                 self.is_using = True
                 reply_words = ('暗号对接成功！进入隐藏功能页面！\n '
-                    '1.语音发送“在干什么”，我会告诉你我正在忙什么啦！\n'
-                    '2.语音发送“有点无聊”，性感小Z，在线陪聊！\n'
-                    '3.语音发送“不玩了”，隐藏功能页面就关闭啦！\n')
+                    '1.语音或者文字发送“在干什么”，我会告诉你我正在忙什么啦！\n'
+                    '2.语音或者文字发送“有点无聊”，性感小Z，在线陪聊！\n'
+                    '3.语音或者文字发送“不玩了”，隐藏功能页面就关闭啦！\n')
             elif self.is_using:
                 reply_words = ('正在隐藏功能页面！\n'
-                    '1.语音发送“在干什么”，我会告诉你我正在忙什么啦！\n'
-                    '2.语音发送“有点无聊”，性感小Z，在线陪聊！\n'
-                    '3.语音发送“不玩了”，隐藏功能页面就关闭啦！\n')
-        if not self.is_using
+                    '1.语音或者文字发送“在干什么”，我会告诉你我正在忙什么啦！\n'
+                    '2.语音或者文字发送“有点无聊”，性感小Z，在线陪聊！\n'
+                    '3.语音或者文字发送“不玩了”，隐藏功能页面就关闭啦！\n')
+        if not self.is_using:
             return 
 		#延时1s后发送
         time.sleep(1)

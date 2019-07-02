@@ -8,7 +8,9 @@ def run():
     主程序入口
     :return: None
     """
+    print('开始运行')
     chatManager = ChatManager()
+    print('chatManager创建成功')
     chatManager.run()
 
 

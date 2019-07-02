@@ -13,8 +13,10 @@ from pydub import AudioSegment
 import wave
 import io
 from apscheduler.schedulers.blocking import BlockingScheduler
-
-
+import _thread
+from wechatHelpers.AutomaticReplier import AutomaticReplier
+from wechatHelpers.BabyCareAbouter import BabyCareAbouter
+from wechatHelpers.GFWeather import GFWeather
 
 
 class ChatManager:   
@@ -23,9 +25,13 @@ class ChatManager:
 	
     def __init__(self):
         self.GFWeather = None
+        _thread.start_new_thread(self.keepAliveJob,())
+
+
+    def keepAliveJob(self):
         scheduler = BlockingScheduler()
         scheduler.add_job(self.keepAlive, 'interval', seconds=60*30)
-        scheduler.start()
+        scheduler.start()	
 
     def keepAlive(self):
         # 不准时发送，防止被微信查封
@@ -98,17 +104,18 @@ class ChatManager:
         # 仅仅判断是否在线
         if not auto_login:
             return online()
-        exitCallback = exit_msg
-        # 登陆，尝试 2 次
-        for _ in range(2):
+
+        # 登陆，尝试 5 次
+        for _ in range(5):
             # 命令行显示登录二维码
             # itchat.auto_login(enableCmdQR=True)
+            print('正在打印登陆二维码')
             if os.environ.get('MODE') == 'server':
-                itchat.auto_login(enableCmdQR=2, exitCallback=exitCallback)
-                itchat.run(blockThread=True)
+                itchat.auto_login(enableCmdQR=2,hotReload=True)
+                _thread.start_new_thread(itchat.run,())
             else:
-                itchat.auto_login(exitCallback=exitCallback)
-                itchat.run(blockThread=True)
+                itchat.auto_login(hotReload=True)
+                _thread.start_new_thread(itchat.run,())
             if online():
                 print('登录成功')
                 return True
@@ -198,7 +205,8 @@ class ChatManager:
         os.remove('tmp.wav')
         os.remove(msg['FileName'])
         return result['result'][0]
-    
+   
+    @staticmethod     
     def set_system_notice(text):
         """
         给文件传输助手发送系统日志。
@@ -207,11 +215,9 @@ class ChatManager:
         """
         if text:
             text = '*' * 30 + '\n\n' + text + '\n\n' + '*' * 30
-            itchat.send(text, toUserName=FILEHELPER)
+            itchat.send(text, toUserName='filehelper')
 
 
-    def exit_msg():
-        set_system_notice('项目已断开连接')
   
 
 
@@ -226,7 +232,7 @@ class ChatManager:
         toUserName = msg['ToUserName']
         #如果是发给filehelper的微信消息，则处理该命令
         if toUserName == 'filehelper':
-            set_system_notice(msg['Text'])
+            ChatManager.set_system_notice(ChatManager.executiveOrder(msg['Text']))
             return
         automaticReplier = ChatManager.automaticRepliers.get(fromUserName)
         if automaticReplier:
@@ -243,16 +249,16 @@ class ChatManager:
         '''
         绑定语音消息，并进行回复！
         '''
-        asrMessage = ChatManager.asr(msg)
         fromUserName = msg['FromUserName']
         automaticReplier = ChatManager.automaticRepliers.get(fromUserName)
         if automaticReplier:
+            asrMessage = ChatManager.asr(msg)
             automaticReplier.reply(asrMessage)
         else:
             babyCareAbouter = ChatManager.babyCareAbouters.get(fromUserName)
             if babyCareAbouter:
+                asrMessage = ChatManager.asr(msg)
                 babyCareAbouter.reply(asrMessage)
-        print(asrMessage)
 	
 
     def run(self):
@@ -261,9 +267,10 @@ class ChatManager:
         :return:None
         '''
         # 自动登录
+        print('正在登陆')
         if not self.is_online(auto_login=True):
             return
-        itchat.run()
+        print('正在加载GFWeather')
         self.GFWeather = GFWeather()
         self.GFWeather.run()
 

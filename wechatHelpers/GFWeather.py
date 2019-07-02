@@ -1,14 +1,14 @@
 import os
 import time
 from datetime import datetime
-
+import random
 import itchat
 import requests
 import yaml
 from apscheduler.schedulers.blocking import BlockingScheduler
 from bs4 import BeautifulSoup
 
-import city_dict
+from wechatHelpers.city_dict import city_dict
 
 
 class GFWeather:
@@ -16,7 +16,7 @@ class GFWeather:
     qinghua = '为什么我把概率设置的很小很小，因为我想和你很久很久~'
 	
     def __init__(self):
-        self.girlfriend_list, self.alarm_hour, self.alarm_minute, self.dictum_channel = self.get_init_data()
+        self.girlfriend_list, self.alarm_hour, self.alarm_minute = self.get_init_data()
 
     def get_init_data(self):
         '''
@@ -35,7 +35,7 @@ class GFWeather:
             girlfriend.get('wechat_name').strip()
             # 根据城市名称获取城市编号，用于查询天气。查看支持的城市为:http://cdn.sojson.com/_city.json
             city_name = girlfriend.get('city_name').strip()
-            city_code = city_dict.city_dict.get(city_name)
+            city_code = city_dict.get(city_name)
             if not city_code:
                 print('您输入的城市无法收取到天气信息')
                 break
@@ -43,13 +43,13 @@ class GFWeather:
             girlfriend_list.append(girlfriend)
 
             print_msg = f"女朋友的微信昵称:{girlfriend.get('wechat_name')}\n\t女友所在城市名称:{girlfriend.get('city_name')}\n\t" \
-                f"在一起的第一天日期:{girlfriend.get('start_date')}\n\t最后一句为:{girlfriend.get('sweet_words')}\n"
+                f"在一起的第一天日期:{girlfriend.get('start_date')}\n\t\n"
             init_msg += print_msg
 
         print(u"*" * 50)
         print(init_msg)
         hour, minute = [int(x) for x in alarm_timed.split(':')]
-        return girlfriend_list, hour, minute, dictum_channel
+        return girlfriend_list, hour, minute
 
 
 
@@ -94,8 +94,7 @@ class GFWeather:
             print(f'给『{wechat_name}』发送的内容是:\n{today_msg}')
 
             if not is_test:
-                if self.is_online(auto_login=True):
-                    itchat.send(today_msg, toUserName=name_uuid)
+                itchat.send(today_msg, toUserName=name_uuid)
                 # 防止信息发送过快。
                 time.sleep(5)
 
@@ -253,10 +252,10 @@ class GFWeather:
                 aqi_words = aqi_words + '今天的空气多吸几口会不会醉了?'	
         return aqi_words
     
-	def get_wish(self):
+    def get_wish(self):
         random_wish = random.randint(1, 365)
         if random_wish == 188:
-            return '哇！！！今天的你超级超级幸运~现在你可以对我许一个愿望，我会竭尽我的所有能力帮你完成愿望！！！'
+            return '哇！！！今天的你超级超级幸运~现在你要是亲我一下，就可以对我许一个愿望，我会竭尽我的所有能力帮你完成愿望！！！'
         return '今天的你没有获得许愿的权力哦！不要泄气，明天再看啦~'
 		
     def get_weather_info(self,  city_code='101030100', start_date='2018-01-01',
@@ -293,7 +292,7 @@ class GFWeather:
             fl = today_weather.get('fl')
 			
             # 愿望
-            wish = get_wish();
+            wish = self.get_wish();
 			
             if random_choice == 1:
                 wind = f'昨晚夜观天象，天象显示今天的风会是{fx}，强度大概{fl}。'
