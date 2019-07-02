@@ -28,7 +28,7 @@ class ChatManager:
 	
     def __init__(self):
         self.GFWeather = None
-        _thread.start_new_thread(self.keepAliveJob,())
+
 
 
     def keepAliveJob(self):
@@ -38,9 +38,9 @@ class ChatManager:
 
     def keepAlive(self):
         # 不准时发送，防止被微信查封
-        sleepSeconds = random.randint(1, 10)
+        sleepSeconds = random.randint(1, 5)
         time.sleep(sleepSeconds)
-        set_system_notice('keepAlive')
+        ChatManager.set_system_notice('keepAlive')
 		
     @staticmethod 
     def addBabyCareAbouter(wechat_name):
@@ -273,6 +273,7 @@ class ChatManager:
         print('正在登陆')
         if not self.is_online(auto_login=True):
             return
+        _thread.start_new_thread(self.keepAliveJob,())
         print('正在加载GFWeather')
         self.GFWeather = GFWeather()
         self.GFWeather.run()
